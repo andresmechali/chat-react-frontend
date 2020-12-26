@@ -9,3 +9,11 @@ export const loadWasm = async (
   );
   return result.instance; // or, return result;
 };
+
+// Parses date object into HH:MM
+export const parseTime = (date) => {
+  const addZero = (number) => `${number < 10 ? "0" : ""}${number}`;
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${addZero(hours)}:${addZero(minutes)}`;
+};
