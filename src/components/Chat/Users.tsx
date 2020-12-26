@@ -15,6 +15,7 @@ const Users = () => {
       size="huge"
       verticalAlign="middle"
       celled
+      selection
     >
       <Header as="h3" className="users-header">
         Users

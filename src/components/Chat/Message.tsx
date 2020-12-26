@@ -4,18 +4,18 @@ import { Label, List } from "semantic-ui-react";
 import { parseTime } from "utils/helpers";
 
 interface MessageProps {
-  user: User;
   message: MessageType;
   isOwn: boolean;
 }
 
-const Message = ({ user, message, isOwn }: MessageProps) => {
-  const { messageId, timestamp, text, name } = message;
+const Message = ({ message, isOwn }: MessageProps) => {
+  const { messageId, timestamp, text, user } = message;
+  const { name, color } = user;
   return (
     <List.Item key={messageId} className="message-item">
       <List.Content className={isOwn ? "align-right" : "align-left"}>
         {!isOwn && (
-          <Label color="red" horizontal>
+          <Label color={color} horizontal>
             {name}
           </Label>
         )}

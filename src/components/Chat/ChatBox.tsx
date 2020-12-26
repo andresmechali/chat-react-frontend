@@ -55,11 +55,10 @@ const ChatBox = () => {
       <Ref innerRef={messagesRef}>
         <List className="message-list">
           {messages.map((message: MessageType) => {
-            const isOwn: boolean = user.userId === message.userId;
+            const isOwn: boolean = user.userId === message.user.userId;
             return (
               <Message
                 key={message.messageId}
-                user={user}
                 message={message}
                 isOwn={isOwn}
               />
@@ -79,9 +78,8 @@ const ChatBox = () => {
               code: Code.MESSAGE,
               data: {
                 message: {
-                  userId: user.userId,
-                  name: user.name,
                   text: messageText,
+                  user: user,
                   timestamp: new Date().toISOString(),
                 },
               },

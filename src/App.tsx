@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Home from "containers/Home";
 
 import { WSContext } from "utils/context";
@@ -13,32 +13,72 @@ const App = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const handleJoin = (event: MessageEvent) => {
+    setUser(event.data.user);
+    setLoading(false);
+  };
+
+  const handleNewUser = (event: MessageEvent) => {
+    setUsers(event.data.users);
+  };
+
+  const handleNewMessage = (event: MessageEvent) => {
+    setMessages((prevMessages: Message[]) =>
+      prevMessages.concat(event.data.message)
+    );
+  };
+
+  const handleError = (event: MessageEvent) => {
+    setError(event.data.error);
+    setLoading(false);
+  };
+
+  const handleRequestMessages = (event: MessageEvent) => {
+    ws.send(
+      JSON.stringify({
+        code: Code.RETURN_MESSAGES,
+        data: {
+          messages,
+          requestedUserId: event.data.requestedUserId,
+        },
+      })
+    );
+  };
+
+  const handleReturnMessages = (event: MessageEvent) => {
+    setMessages(event.data.messages);
+  };
+
   useEffect(() => {
     ws.onopen = () => {
       console.log("connected");
     };
 
-    ws.onmessage = (e) => {
+    ws.onmessage = (e: MessageEvent) => {
       const event = JSON.parse(e.data);
       switch (event.code) {
         case Code.JOIN: {
-          setUser(event.data.user);
-          setLoading(false);
+          handleJoin(event);
           break;
         }
         case Code.USERS: {
-          setUsers(event.data.users);
+          handleNewUser(event);
           break;
         }
         case Code.MESSAGE: {
-          setMessages((prevMessages: Message[]) =>
-            prevMessages.concat(event.data.message)
-          );
+          handleNewMessage(event);
           break;
         }
         case Code.ERROR: {
-          setError(event.data.error);
-          setLoading(false);
+          handleError(event);
+          break;
+        }
+        case Code.REQUEST_MESSAGES: {
+          handleRequestMessages(event);
+          break;
+        }
+        case Code.RETURN_MESSAGES: {
+          handleReturnMessages(event);
           break;
         }
         default: {
@@ -56,7 +96,7 @@ const App = () => {
       console.log("error");
       ws.send(JSON.stringify({ code: 4500, x: 9 }));
     };
-  }, []);
+  });
 
   return (
     <WSContext.Provider

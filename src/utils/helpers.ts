@@ -1,6 +1,6 @@
 // Loads WASM file
 export const loadWasm = async (
-  url,
+  url: string,
   importObject = { module: {}, env: { abort() {} } }
 ) => {
   const result = await WebAssembly.instantiateStreaming(
@@ -11,8 +11,8 @@ export const loadWasm = async (
 };
 
 // Parses date object into HH:MM
-export const parseTime = (date) => {
-  const addZero = (number) => `${number < 10 ? "0" : ""}${number}`;
+export const parseTime = (date: Date) => {
+  const addZero = (number: number) => `${number < 10 ? "0" : ""}${number}`;
   const hours = date.getHours();
   const minutes = date.getMinutes();
   return `${addZero(hours)}:${addZero(minutes)}`;

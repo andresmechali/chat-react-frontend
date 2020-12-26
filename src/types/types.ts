@@ -1,16 +1,17 @@
 import type { Provider } from "react";
+import type { SemanticCOLORS } from "semantic-ui-react";
 
 export interface User {
   userId: string;
   name: string;
   groupName: string;
+  color: SemanticCOLORS;
 }
 
 export interface Message {
   messageId: string;
-  userId: string;
-  name: string;
   text: string;
+  user: User;
   timestamp: Date;
 }
 
@@ -38,6 +39,8 @@ export interface ContextType {
 export enum Code {
   JOIN = 4001,
   MESSAGE = 4002,
+  REQUEST_MESSAGES = 4003,
+  RETURN_MESSAGES = 4004,
   USERS = 4101,
   ERROR = 4300,
 }
