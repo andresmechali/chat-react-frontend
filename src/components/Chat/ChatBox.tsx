@@ -12,17 +12,17 @@ import {
   Form,
   InputOnChangeData,
   Ref,
-  Label,
   Header,
 } from "semantic-ui-react";
 import { WSContext } from "utils/context";
+import { encrypt, decrypt } from "utils/crypto";
 
 import { Code, Message as MessageType } from "types/types";
 import Message from "./Message";
 
 const ChatBox = () => {
   const [messageText, setMessageText] = useState("");
-  const { ws, user, messages } = useContext(WSContext);
+  const { ws, user, messages, passKey } = useContext(WSContext);
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const handleMessageChange = (
@@ -68,17 +68,18 @@ const ChatBox = () => {
       </Ref>
       <Card.Content extra>
         <Form
-          onSubmit={(e: FormEvent) => {
+          onSubmit={async (e: FormEvent) => {
             e.preventDefault();
             // Generate Message event and send to server
             if (messageText === "") {
               return;
             }
+
             const event = {
               code: Code.MESSAGE,
               data: {
                 message: {
-                  text: messageText,
+                  text: await encrypt(messageText, passKey),
                   user: user,
                   timestamp: new Date().toISOString(),
                 },

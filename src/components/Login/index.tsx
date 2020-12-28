@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import {
   Grid,
   Header,
@@ -10,13 +10,22 @@ import {
 } from "semantic-ui-react";
 
 import { WSContext } from "utils/context";
+import { encrypt } from "utils/crypto";
 import { Code } from "types/types";
 
 const Login = () => {
-  const { ws, error, loading, setLoading, setError } = useContext(WSContext);
+  const {
+    ws,
+    passKey,
+    setPassKey,
+    error,
+    loading,
+    setLoading,
+    setError,
+    isReady,
+  } = useContext(WSContext);
 
   const [name, setName] = useState("");
-  const [passKey, setPassKey] = useState("");
 
   const handleNameChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -32,28 +41,30 @@ const Login = () => {
     setPassKey(value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Reset error
     setError(null);
 
-    // Create JOIN event
-    const event = {
-      code: Code.JOIN,
-      data: {
-        name,
-        groupName: passKey,
-      },
-    };
+    if (isReady) {
+      // Create JOIN event
+      const event = {
+        code: Code.JOIN,
+        data: {
+          name,
+          groupName: await encrypt(passKey, passKey),
+        },
+      };
 
-    // Send event to server
-    ws.send(JSON.stringify(event));
+      // Send event to server
+      ws.send(JSON.stringify(event));
 
-    // Set state to loading
-    setLoading(true);
+      // Set state to loading
+      setLoading(true);
 
-    // Reset input values
-    setName("");
-    setPassKey("");
+      // Reset input values
+      /*setName("");
+      setPassKey("");*/
+    }
   };
 
   return (
@@ -88,7 +99,13 @@ const Login = () => {
             />
 
             <Message error content={error?.description} />
-            <Button color="red" fluid size="large" loading={loading}>
+            <Button
+              color="red"
+              fluid
+              size="large"
+              loading={loading}
+              disabled={!isReady}
+            >
               Enter
             </Button>
           </Segment>

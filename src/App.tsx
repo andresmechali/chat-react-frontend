@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+
 import Home from "containers/Home";
 
 import { WSContext } from "utils/context";
-import { Code, Message, User, Error } from "types/types";
+import { Code, Message, User, Error, ErrorCode } from "types/types";
 
-const ws = new WebSocket("ws://localhost:8080");
+const { NODE_ENV, SNOWPACK_PUBLIC_API_URL } = import.meta.env;
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -12,6 +13,13 @@ const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const [passKey, setPassKey] = useState<string>("");
+
+  const socket = useRef<WebSocket | null>(null);
+  const reconnecting = useRef<NodeJS.Timeout>(null);
+  const ping = useRef<NodeJS.Timeout>(null);
+  const [tryingToReconnect, setTryingToReconnect] = useState<boolean>(false);
 
   const handleJoin = (event: MessageEvent) => {
     setUser(event.data.user);
@@ -34,7 +42,7 @@ const App = () => {
   };
 
   const handleRequestMessages = (event: MessageEvent) => {
-    ws.send(
+    socket.current.send(
       JSON.stringify({
         code: Code.RETURN_MESSAGES,
         data: {
@@ -49,12 +57,24 @@ const App = () => {
     setMessages(event.data.messages);
   };
 
-  useEffect(() => {
-    ws.onopen = () => {
-      console.log("connected");
+  const connectWs = useCallback(() => {
+    const socketUrl =
+      NODE_ENV === "production" ? SNOWPACK_PUBLIC_API_URL : "localhost:8080";
+    socket.current = new WebSocket(`ws://${socketUrl}`);
+
+    socket.current.onopen = () => {
+      setIsReady(true);
+      setError(null);
+      setTryingToReconnect(false);
+      ping.current = setInterval(() => {
+        const event = {
+          code: Code.PING,
+        };
+        socket.current.send(JSON.stringify(event));
+      }, 30 * 1000);
     };
 
-    ws.onmessage = (e: MessageEvent) => {
+    socket.current.onmessage = onmessage = (e: MessageEvent) => {
       const event = JSON.parse(e.data);
       switch (event.code) {
         case Code.JOIN: {
@@ -86,29 +106,45 @@ const App = () => {
         }
       }
     };
+  }, []);
 
-    ws.onclose = (e) => {
-      console.log("close");
-      ws.send(JSON.stringify({ code: 4999, x: 1 }));
-    };
+  useEffect(() => {
+    connectWs();
 
-    ws.onerror = (e) => {
-      console.log("error");
-      ws.send(JSON.stringify({ code: 4500, x: 9 }));
+    socket.current.onclose = () => {
+      setUser(null);
+      setError({
+        code: ErrorCode.CLOSED,
+        description: "There seems to be a problem on the server",
+      });
+      setIsReady(false);
+      setTryingToReconnect(true);
+      clearInterval(ping.current);
     };
-  });
+  }, []);
+
+  useEffect(() => {
+    if (tryingToReconnect) {
+      reconnecting.current = setInterval(connectWs, 1000);
+    } else {
+      clearInterval(reconnecting.current);
+    }
+  }, [tryingToReconnect]);
 
   return (
     <WSContext.Provider
       value={{
-        ws,
+        ws: socket.current,
         user,
         users,
+        passKey,
+        setPassKey,
         messages,
         error,
         loading,
         setLoading,
         setError,
+        isReady,
       }}
     >
       <Home />;

@@ -17,6 +17,7 @@ export interface Message {
 
 export enum ErrorCode {
   NAME_USED = 1,
+  CLOSED = 2,
 }
 
 export interface Error {
@@ -29,14 +30,18 @@ export interface ContextType {
   ws: WebSocket | null;
   user: User | null;
   users: User[];
+  passKey: string | "";
+  setPassKey: (value: string) => void;
   messages: Message[];
   error: Error | null;
   loading: boolean;
   setLoading: (value: boolean) => void;
   setError: (error: Error) => void;
+  isReady: boolean;
 }
 
 export enum Code {
+  PING = 4000,
   JOIN = 4001,
   MESSAGE = 4002,
   REQUEST_MESSAGES = 4003,

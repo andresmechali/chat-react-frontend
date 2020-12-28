@@ -1,10 +1,15 @@
 // Example Configuration File
 module.exports = {
-  plugins: ["@snowpack/plugin-react-refresh", "@snowpack/plugin-sass"],
+  plugins: [
+    "@snowpack/plugin-react-refresh",
+    "@snowpack/plugin-sass",
+    "@snowpack/plugin-dotenv",
+  ],
   installOptions: {
     /* ... */
   },
   devOptions: {
+    port: 3000,
     /* ... */
   },
   buildOptions: {

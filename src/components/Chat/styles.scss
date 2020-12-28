@@ -48,6 +48,16 @@
   border-color: transparent;
 }
 
+.ui.placeholder .medium.line.line.line:after {
+  width: 0;
+}
+
+.ui.placeholder {
+  height: 14px;
+  align-self: center;
+  min-width: 100px
+}
+
 .message-wrapper {
   height: 100vh;
 }
@@ -55,16 +65,27 @@
 .message-list {
   height: 100%;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
   padding: 16px !important;
 }
 
 .message-item {
-  min-width: 100px;
+  //min-width: 100px;
+  padding: 8px 12px !important;
+  margin-bottom: 4px;
+  background-color: rgb(240, 240, 240);
+  border-radius: 3px;
+}
+
+.message-content {
+  display: flex;
 }
 
 .message-text {
   font-weight: bold;
-  vertical-align: middle;
+  align-items: center;
+  display: flex;
 }
 
 .message-time {
@@ -75,10 +96,12 @@
 
 .align-right {
   text-align: right;
+  align-self: flex-end
 }
 
 .align-left {
   text-align: left;
+  align-self: flex-start;
 }
 
 .ui.header {

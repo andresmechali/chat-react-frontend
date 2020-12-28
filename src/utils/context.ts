@@ -8,6 +8,8 @@ export const WSContext = React.createContext<Partial<ContextType>>({
   messages: [],
   error: null,
   loading: false,
+  isReady: false,
+  passKey: null,
   setError: (error) => {},
   setLoading: (value) => {},
 });

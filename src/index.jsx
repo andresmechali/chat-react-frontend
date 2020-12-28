@@ -8,6 +8,8 @@ const root = document.getElementById("root");
 
 ReactDOM.render(<App />, root);
 
+console.log(import.meta);
+
 // Hot Module Replacement (HMR)
 if (import.meta.hot) {
   import.meta.hot.accept();
