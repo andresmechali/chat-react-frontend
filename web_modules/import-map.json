@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "react": "./react.js",
+    "react-dom": "./react-dom.js",
+    "react-split-pane": "./react-split-pane.js",
+    "semantic-ui-css/semantic.min.css": "./semantic-ui-css/semantic.min.css",
+    "semantic-ui-react": "./semantic-ui-react.js"
+  }
+}
