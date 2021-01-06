@@ -15,14 +15,14 @@ import {
   Header,
 } from "semantic-ui-react";
 import { WSContext } from "utils/context";
-import { encrypt, decrypt } from "utils/crypto";
+import { encrypt } from "utils/crypto";
 
 import { Code, Message as MessageType } from "types/types";
 import Message from "./Message";
 
 const ChatBox = () => {
   const [messageText, setMessageText] = useState("");
-  const { ws, user, messages, passKey } = useContext(WSContext);
+  const { ws, user, messages, password } = useContext(WSContext);
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const handleMessageChange = (
@@ -61,6 +61,7 @@ const ChatBox = () => {
                 key={message.messageId}
                 message={message}
                 isOwn={isOwn}
+                password={password}
               />
             );
           })}
@@ -68,26 +69,32 @@ const ChatBox = () => {
       </Ref>
       <Card.Content extra>
         <Form
-          onSubmit={async (e: FormEvent) => {
+          onSubmit={(e: FormEvent) => {
             e.preventDefault();
             // Generate Message event and send to server
             if (messageText === "") {
               return;
             }
-
-            const event = {
-              code: Code.MESSAGE,
-              data: {
-                message: {
-                  text: await encrypt(messageText, passKey),
-                  user: user,
-                  timestamp: new Date().toISOString(),
+            
+            encrypt(messageText, password).then(encryptedText => {
+              const event = {
+                code: Code.MESSAGE,
+                data: {
+                  message: {
+                    text: encryptedText,
+                    user: user,
+                    timestamp: new Date().toISOString(),
+                  },
                 },
-              },
-            };
-            ws.send(JSON.stringify(event));
-            // Empty input string
-            setMessageText("");
+              };
+              ws.send(JSON.stringify(event));
+              // Empty input string
+              setMessageText("");
+            }).catch(e => {
+              setMessageText("");
+            })
+
+
           }}
         >
           <Form.Field required>

@@ -16,8 +16,8 @@ import { Code } from "types/types";
 const Login = () => {
   const {
     ws,
-    passKey,
-    setPassKey,
+    password,
+    setPassword,
     error,
     loading,
     setLoading,
@@ -34,11 +34,11 @@ const Login = () => {
     setName(value);
   };
 
-  const handlePassKeyChange = (
+  const handlePasswordChange = (
     event: ChangeEvent<HTMLInputElement>,
     { value }: InputOnChangeData
   ) => {
-    setPassKey(value);
+    setPassword(value);
   };
 
   const handleSubmit = async () => {
@@ -51,7 +51,7 @@ const Login = () => {
         code: Code.JOIN,
         data: {
           name,
-          groupName: await encrypt(passKey, passKey),
+          groupName: await encrypt(password, password),
         },
       };
 
@@ -63,7 +63,7 @@ const Login = () => {
 
       // Reset input values
       /*setName("");
-      setPassKey("");*/
+      setPassword("");*/
     }
   };
 
@@ -87,14 +87,14 @@ const Login = () => {
               autoFocus
             />
             <Form.Input
-              value={passKey}
-              onChange={handlePassKeyChange}
+              value={password}
+              onChange={handlePasswordChange}
               type="password"
               fluid
               icon="lock"
               iconPosition="left"
               placeholder="Secret key"
-              autoComplete="chat-passkey"
+              autoComplete="chat-password"
               required
             />
 

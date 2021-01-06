@@ -14,7 +14,7 @@ const App = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [passKey, setPassKey] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const socket = useRef<WebSocket | null>(null);
   const reconnecting = useRef<NodeJS.Timeout>(null);
@@ -147,8 +147,8 @@ const App = () => {
         ws: socket.current,
         user,
         users,
-        passKey,
-        setPassKey,
+        password,
+        setPassword,
         messages,
         error,
         loading,

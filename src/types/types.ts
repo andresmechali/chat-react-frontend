@@ -30,8 +30,8 @@ export interface ContextType {
   ws: WebSocket | null;
   user: User | null;
   users: User[];
-  passKey: string | "";
-  setPassKey: (value: string) => void;
+  password: string | "";
+  setPassword: (value: string) => void;
   messages: Message[];
   error: Error | null;
   loading: boolean;

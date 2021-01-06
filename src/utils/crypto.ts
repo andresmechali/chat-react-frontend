@@ -6,6 +6,7 @@ export const encrypt = async (text: string, password: string) => {
   const pwUtf8 = new TextEncoder().encode(password);
   const pwHash = await crypto.subtle.digest("SHA-256", pwUtf8);
   //const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  // TODO: generate a random array for encryption, and send this array to server
   const iv = new Uint8Array([
     16,
     7,
