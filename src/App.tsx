@@ -70,43 +70,53 @@ const App = () => {
         const event = {
           code: Code.PING,
         };
-        socket.current.send(JSON.stringify(event));
+        socket?.current?.send(JSON.stringify(event));
       }, 30 * 1000);
     };
-
-    socket.current.onmessage = onmessage = (e: MessageEvent) => {
-      const event = JSON.parse(e.data);
-      switch (event.code) {
-        case Code.JOIN: {
-          handleJoin(event);
-          break;
-        }
-        case Code.USERS: {
-          handleNewUser(event);
-          break;
-        }
-        case Code.MESSAGE: {
-          handleNewMessage(event);
-          break;
-        }
-        case Code.ERROR: {
-          handleError(event);
-          break;
-        }
-        case Code.REQUEST_MESSAGES: {
-          handleRequestMessages(event);
-          break;
-        }
-        case Code.RETURN_MESSAGES: {
-          handleReturnMessages(event);
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-    };
   }, []);
+
+  /**
+   * On every rerender, update socket's onmessage handler.
+   * This allows the handler to have the latest state, and not
+   * the initial one.
+   */
+  useEffect(() => {
+    if (socket?.current) {
+      socket.current.onmessage = onmessage = (e: MessageEvent) => {
+        const event = JSON.parse(e.data);
+        switch (event.code) {
+          case Code.JOIN: {
+            handleJoin(event);
+            break;
+          }
+          case Code.USERS: {
+            handleNewUser(event);
+            break;
+          }
+          case Code.MESSAGE: {
+            handleNewMessage(event);
+            break;
+          }
+          case Code.ERROR: {
+            handleError(event);
+            break;
+          }
+          case Code.REQUEST_MESSAGES: {
+            console.log("request messages");
+            handleRequestMessages(event);
+            break;
+          }
+          case Code.RETURN_MESSAGES: {
+            handleReturnMessages(event);
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+      };
+    }
+  })
 
   useEffect(() => {
     connectWs();

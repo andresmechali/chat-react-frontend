@@ -13,6 +13,7 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
+    baseUrl: "/chat-react-frontend",
     /* ... */
   },
   mount: {

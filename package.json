@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "Simple chat application",
   "main": "index.js",
+  "homepage": "https://andresmechali.github.io/chat-react-frontend/",
   "scripts": {
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build",
     "start": "snowpack dev",
     "build": "snowpack build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +24,7 @@
   "dependencies": {
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "gh-pages": "^3.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-split-pane": "^0.1.92",
