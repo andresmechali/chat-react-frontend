@@ -37,15 +37,24 @@ const ChatBox = () => {
    */
   useEffect(() => {
     if (messagesRef.current) {
-      new MutationObserver((mutation: MutationRecord[]) => {
-        const { target } = mutation[0];
-        target?.scroll({
-          top: target?.scrollHeight,
-          behavior: "smooth",
-        });
+      new MutationObserver((mutations: MutationRecord[]) => {
+        mutations.forEach((mutation: MutationRecord) => {
+          const target: Node = mutation.target;
+          // @ts-ignore
+          target?.scroll({
+            // @ts-ignore
+            top: target?.scrollHeight,
+            behavior: "smooth",
+          });
+        })
+
       }).observe(messagesRef.current, { childList: true });
     }
   }, []);
+
+  if (!password) {
+    return null;
+  }
 
   return (
     <Card fluid className="message-wrapper">
@@ -54,8 +63,8 @@ const ChatBox = () => {
       </Header>
       <Ref innerRef={messagesRef}>
         <List className="message-list">
-          {messages.map((message: MessageType) => {
-            const isOwn: boolean = user.userId === message.user.userId;
+          {messages?.map((message: MessageType) => {
+            const isOwn: boolean = user?.userId === message.user.userId;
             return (
               <Message
                 key={message.messageId}
@@ -87,7 +96,7 @@ const ChatBox = () => {
                   },
                 },
               };
-              ws.send(JSON.stringify(event));
+              ws?.send(JSON.stringify(event));
               // Empty input string
               setMessageText("");
             }).catch(e => {

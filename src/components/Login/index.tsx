@@ -38,14 +38,18 @@ const Login = () => {
     event: ChangeEvent<HTMLInputElement>,
     { value }: InputOnChangeData
   ) => {
-    setPassword(value);
+    if (setPassword) {
+      setPassword(value);
+    }
   };
 
   const handleSubmit = async () => {
     // Reset error
-    setError(null);
+    if (setError) {
+      setError(null);
+    }
 
-    if (isReady) {
+    if (isReady && password) {
       // Create JOIN event
       const event = {
         code: Code.JOIN,
@@ -56,10 +60,12 @@ const Login = () => {
       };
 
       // Send event to server
-      ws.send(JSON.stringify(event));
+      ws?.send(JSON.stringify(event));
 
       // Set state to loading
-      setLoading(true);
+      if (setLoading) {
+        setLoading(true);
+      }
 
       // Reset input values
       /*setName("");

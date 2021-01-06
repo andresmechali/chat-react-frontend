@@ -36,7 +36,7 @@ export interface ContextType {
   error: Error | null;
   loading: boolean;
   setLoading: (value: boolean) => void;
-  setError: (error: Error) => void;
+  setError: (error: Error | null) => void;
   isReady: boolean;
 }
 

@@ -64,6 +64,10 @@ export const decrypt = async (cipherText: string, password: string) => {
     .match(/.{2}/g)
     ?.map((byte) => parseInt(byte, 16));
 
+  if (!iv) {
+    return "";
+  }
+
   const algorithm = { name: "AES-GCM", iv: new Uint8Array(iv) };
 
   const key = await crypto.subtle.importKey("raw", pwHash, algorithm, false, [
@@ -71,8 +75,12 @@ export const decrypt = async (cipherText: string, password: string) => {
   ]);
 
   const cipherStr = atob(cipherText.slice(24));
+  const match = cipherStr.match(/[\s\S]/g);
+  if (!match) {
+    return "";
+  }
   const ctUint8 = new Uint8Array(
-    cipherStr.match(/[\s\S]/g).map((ch) => ch.charCodeAt(0))
+    match.map((ch) => ch.charCodeAt(0))
   );
 
   const plainBuffer = await crypto.subtle.decrypt(algorithm, key, ctUint8);

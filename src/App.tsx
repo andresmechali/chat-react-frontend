@@ -5,6 +5,7 @@ import Home from "containers/Home";
 import { WSContext } from "utils/context";
 import { Code, Message, User, Error, ErrorCode } from "types/types";
 
+// @ts-ignore
 const { NODE_ENV, SNOWPACK_PUBLIC_API_URL } = import.meta.env;
 
 const App = () => {
@@ -17,8 +18,8 @@ const App = () => {
   const [password, setPassword] = useState<string>("");
 
   const socket = useRef<WebSocket | null>(null);
-  const reconnecting = useRef<NodeJS.Timeout>(null);
-  const ping = useRef<NodeJS.Timeout>(null);
+  const reconnecting = useRef<NodeJS.Timeout | null>(null);
+  const ping = useRef<NodeJS.Timeout | null>(null);
   const [tryingToReconnect, setTryingToReconnect] = useState<boolean>(false);
 
   const handleJoin = (event: MessageEvent) => {
@@ -42,7 +43,7 @@ const App = () => {
   };
 
   const handleRequestMessages = (event: MessageEvent) => {
-    socket.current.send(
+    socket?.current?.send(
       JSON.stringify({
         code: Code.RETURN_MESSAGES,
         data: {
@@ -102,7 +103,6 @@ const App = () => {
             break;
           }
           case Code.REQUEST_MESSAGES: {
-            console.log("request messages");
             handleRequestMessages(event);
             break;
           }
@@ -121,22 +121,26 @@ const App = () => {
   useEffect(() => {
     connectWs();
 
-    socket.current.onclose = () => {
-      setUser(null);
-      setError({
-        code: ErrorCode.CLOSED,
-        description: "There seems to be a problem on the server",
-      });
-      setIsReady(false);
-      setTryingToReconnect(true);
-      clearInterval(ping.current);
-    };
+    if (socket.current) {
+      socket.current.onclose = () => {
+        setUser(null);
+        setError({
+          code: ErrorCode.CLOSED,
+          description: "There seems to be a problem on the server",
+        });
+        setIsReady(false);
+        setTryingToReconnect(true);
+        if (ping.current) {
+          clearInterval(ping.current);
+        }
+      };
+    }
   }, []);
 
   useEffect(() => {
     if (tryingToReconnect) {
       reconnecting.current = setInterval(connectWs, 1000);
-    } else {
+    } else if (reconnecting.current) {
       clearInterval(reconnecting.current);
     }
   }, [tryingToReconnect]);
