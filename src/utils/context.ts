@@ -1,7 +1,7 @@
-import React from "react";
+import React, { Provider } from "react";
 import type { ContextType } from "types/types";
 
-export const WSContext = React.createContext<Partial<ContextType>>({
+export const WSContext = React.createContext<ContextType>({
   ws: null,
   user: null,
   users: [],
@@ -10,7 +10,9 @@ export const WSContext = React.createContext<Partial<ContextType>>({
   loading: false,
   isReady: false,
   password: "",
+  secret: "",
   setError: (error) => {},
   setLoading: (value) => {},
   setPassword: () => {},
+  setSecret: () => {},
 });

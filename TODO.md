@@ -1,4 +1,5 @@
 ### TODO
+
 - [ ] Clean all TS warnings
 - [ ] Replace Context with component composing, or Redux
 - [ ] Add README.md

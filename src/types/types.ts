@@ -1,4 +1,3 @@
-import type { Provider } from "react";
 import type { SemanticCOLORS } from "semantic-ui-react";
 
 export interface User {
@@ -23,15 +22,20 @@ export enum ErrorCode {
 export interface Error {
   code: ErrorCode;
   description: string;
+  information?: {
+    name?: string;
+    color?: SemanticCOLORS;
+  };
 }
 
 export interface ContextType {
-  Provider: Provider<any>;
   ws: WebSocket | null;
   user: User | null;
   users: User[];
   password: string | "";
   setPassword: (value: string) => void;
+  secret: string | "";
+  setSecret: (value: string) => void;
   messages: Message[];
   error: Error | null;
   loading: boolean;

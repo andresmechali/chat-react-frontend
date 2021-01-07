@@ -22,7 +22,7 @@ import Message from "./Message";
 
 const ChatBox = () => {
   const [messageText, setMessageText] = useState("");
-  const { ws, user, messages, password } = useContext(WSContext);
+  const { ws, user, messages, secret } = useContext(WSContext);
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const handleMessageChange = (
@@ -46,15 +46,10 @@ const ChatBox = () => {
             top: target?.scrollHeight,
             behavior: "smooth",
           });
-        })
-
+        });
       }).observe(messagesRef.current, { childList: true });
     }
   }, []);
-
-  if (!password) {
-    return null;
-  }
 
   return (
     <Card fluid className="message-wrapper">
@@ -70,7 +65,7 @@ const ChatBox = () => {
                 key={message.messageId}
                 message={message}
                 isOwn={isOwn}
-                password={password}
+                secret={secret}
               />
             );
           })}
@@ -84,26 +79,26 @@ const ChatBox = () => {
             if (messageText === "") {
               return;
             }
-            
-            encrypt(messageText, password).then(encryptedText => {
-              const event = {
-                code: Code.MESSAGE,
-                data: {
-                  message: {
-                    text: encryptedText,
-                    user: user,
-                    timestamp: new Date().toISOString(),
+
+            encrypt(messageText, secret)
+              .then((encryptedText) => {
+                const event = {
+                  code: Code.MESSAGE,
+                  data: {
+                    message: {
+                      text: encryptedText,
+                      user: user,
+                      timestamp: new Date().toISOString(),
+                    },
                   },
-                },
-              };
-              ws?.send(JSON.stringify(event));
-              // Empty input string
-              setMessageText("");
-            }).catch(e => {
-              setMessageText("");
-            })
-
-
+                };
+                ws?.send(JSON.stringify(event));
+                // Empty input string
+                setMessageText("");
+              })
+              .catch((e) => {
+                setMessageText("");
+              });
           }}
         >
           <Form.Field required>

@@ -14,15 +14,15 @@ interface MessageProps {
    */
   isOwn: boolean;
   /**
-   * password for decrypting message
+   * secret for decrypting message
    */
-  password: string
+  secret: string;
 }
 
 /**
  * Renders a message with user name and time
  */
-const Message = ({ message, isOwn, password }: MessageProps) => {
+const Message = ({ message, isOwn, secret }: MessageProps) => {
   const { messageId, timestamp, text, user } = message;
   const { name, color } = user;
   const [decryptedText, setDecryptedText] = useState<string | null>(null);
@@ -32,7 +32,7 @@ const Message = ({ message, isOwn, password }: MessageProps) => {
    * Decrypt message
    */
   useEffect(() => {
-    decrypt(text, password).then((msg) => {
+    decrypt(text, secret).then((msg) => {
       setDecryptedText(msg);
       setShow(true);
     });
@@ -46,8 +46,8 @@ const Message = ({ message, isOwn, password }: MessageProps) => {
   useEffect(() => {
     setTimeout(() => {
       setShow(true);
-    },200)
-  }, [])
+    }, 200);
+  }, []);
 
   if (!show) {
     return null;

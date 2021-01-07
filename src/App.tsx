@@ -16,6 +16,7 @@ const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
+  const [secret, setSecret] = useState<string>("");
 
   const socket = useRef<WebSocket | null>(null);
   const reconnecting = useRef<NodeJS.Timeout | null>(null);
@@ -60,7 +61,9 @@ const App = () => {
 
   const connectWs = useCallback(() => {
     const socketUrl =
-      NODE_ENV === "production" ? SNOWPACK_PUBLIC_API_URL : "localhost:8080";
+      NODE_ENV === "production"
+        ? SNOWPACK_PUBLIC_API_URL
+        : "95.216.158.81:8080";
     socket.current = new WebSocket(`ws://${socketUrl}`);
 
     socket.current.onopen = () => {
@@ -116,7 +119,7 @@ const App = () => {
         }
       };
     }
-  })
+  });
 
   useEffect(() => {
     connectWs();
@@ -153,6 +156,8 @@ const App = () => {
         users,
         password,
         setPassword,
+        secret,
+        setSecret,
         messages,
         error,
         loading,

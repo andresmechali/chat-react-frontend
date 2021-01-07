@@ -1,23 +1,27 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, useContext, useMemo, useState } from "react";
 import {
+  Button,
+  Form,
   Grid,
   Header,
-  Form,
-  Segment,
-  Button,
   InputOnChangeData,
   Message,
+  Segment,
+  Label,
 } from "semantic-ui-react";
 
 import { WSContext } from "utils/context";
 import { encrypt } from "utils/crypto";
-import { Code } from "types/types";
+import { Code, ErrorCode } from "types/types";
+
+import "./styles.scss";
 
 const Login = () => {
   const {
     ws,
     password,
     setPassword,
+    setSecret,
     error,
     loading,
     setLoading,
@@ -43,13 +47,38 @@ const Login = () => {
     }
   };
 
+  const errorMessage = useMemo(() => {
+    if (!error) {
+      return null;
+    }
+    switch (error.code) {
+      case ErrorCode.NAME_USED: {
+        const _name = error.information.name;
+        const color = error.information.color;
+        return (
+          <>
+            Name
+            <Label color={color} horizontal className="user-label">
+              {_name}
+            </Label>
+            already exists.
+          </>
+        );
+      }
+      default: {
+        return error.description;
+      }
+    }
+  }, [error]);
+
   const handleSubmit = async () => {
     // Reset error
-    if (setError) {
-      setError(null);
-    }
+    setError(null);
 
-    if (isReady && password) {
+    if (isReady) {
+      // Store secret
+      setSecret(password);
+
       // Create JOIN event
       const event = {
         code: Code.JOIN,
@@ -68,8 +97,8 @@ const Login = () => {
       }
 
       // Reset input values
-      /*setName("");
-      setPassword("");*/
+      setName("");
+      setPassword("");
     }
   };
 
@@ -104,7 +133,7 @@ const Login = () => {
               required
             />
 
-            <Message error content={error?.description} />
+            <Message error content={errorMessage} />
             <Button
               color="red"
               fluid
